@@ -60,9 +60,10 @@ def save_everything(args, metrics_hist_all, model, model_dir, params, criterion,
     save_metrics(metrics_hist_all, model_dir)
     params['model_dir'] = model_dir
     save_params_dict(params)
-
     if not evaluate:
         #save the model with the best criterion metric
+        print("Evalute {} ".format(np.all(np.isnan(metrics_hist_all[0][criterion]))))
+
         if not np.all(np.isnan(metrics_hist_all[0][criterion])):
             if criterion == 'loss_dev': 
                 eval_val = np.nanargmin(metrics_hist_all[0][criterion])
@@ -73,7 +74,10 @@ def save_everything(args, metrics_hist_all, model, model_dir, params, criterion,
 
 		#save state dict
                 sd = model.cpu().state_dict()
+                print("Saving pth file ")
                 torch.save(sd, model_dir + "/model_best_%s.pth" % criterion)
                 if args.gpu:
                     model.cuda()
+        else:
+            print("Model Skipped!!!")
     print("saved metrics, params, model to directory %s\n" % (model_dir))
